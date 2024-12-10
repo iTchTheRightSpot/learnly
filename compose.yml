@@ -1,0 +1,25 @@
+services:
+  pg:
+    image: postgres:15.6
+    restart: always
+    container_name: pg
+    env_file:
+      - ./.env
+    volumes:
+      - pg-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    expose:
+      - ${DB_PORT}
+    healthcheck:
+      test: ['CMD', 'pg_isready']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg-db-data:

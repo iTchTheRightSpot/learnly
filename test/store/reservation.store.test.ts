@@ -34,7 +34,7 @@ describe(`${ReservationStore.name} test`, () => {
   let testType: TestTypeEntity;
 
   beforeAll(async () => {
-    pool = poolInstance();
+    pool = poolInstance(logger);
     client = await pool.connect();
     const db = new MockLiveDatabaseClient(client);
     reservationStore = new ReservationStore(logger, db);

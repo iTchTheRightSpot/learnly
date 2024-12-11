@@ -13,7 +13,7 @@ export const dbPool = (logger: ILogger) =>
     database: env.DB_CONFIG.database,
     min: 10,
     max: 25,
-    log: (m) => logger.log(m),
+    // log: (m) => logger.log(m),
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000
   });

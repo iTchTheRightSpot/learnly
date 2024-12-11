@@ -4,9 +4,7 @@ import { ILogger } from '@utils/log';
 import { Pool, PoolClient } from 'pg';
 
 export enum TransactionIsolationLevel {
-  READ_UNCOMMITED = 'BEGIN TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
   READ_COMMITTED = 'BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED',
-  REPEATABLE_READ = 'BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ',
   SERIALIZABLE = 'BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;'
 }
 
@@ -38,24 +36,27 @@ export class TransactionProvider implements ITransactionProvider {
     isolation: TransactionIsolationLevel = TransactionIsolationLevel.READ_COMMITTED
   ): Promise<T> {
     let oc: PoolClient | undefined;
+
     try {
       oc = await this.pool.connect();
       const client = new DatabaseTransactionClient(oc);
       this.logger.log(isolation);
-      await client.exec(`${isolation}`);
+      await client.exec(isolation);
       const result = await txFunc(initializeAdapters(this.logger, client));
       await client.exec('COMMIT');
       this.logger.log('TRANSACTION COMMITTED');
       return result;
     } catch (err) {
-      if (oc) await oc.query('ROLLBACK');
-      this.logger.error(`TRANSACTION ROLLED BACK. ${err}`);
+      if (oc) {
+        await oc.query('ROLLBACK');
+        this.logger.error(`TRANSACTION ROLLED BACK. ${err}`);
+      } else this.logger.error(`TRANSACTION NEVER STARTED ${err}`)
       throw err;
     } finally {
       if (oc) {
         oc.release();
         this.logger.log('pool client released');
-      }
+      } else this.logger.error('TRANSACTION NEVER STARTED')
     }
   }
 }

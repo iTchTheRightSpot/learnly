@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 export interface IStaffStore {
   staffByProfileId(profileId: number): Promise<StaffEntity | undefined>;
   save(p: StaffEntity): Promise<StaffEntity>;
+  staffByUUID(staffUUID: string): Promise<StaffEntity | undefined>;
 }
 
 export class StaffStore implements IStaffStore {
@@ -64,6 +65,32 @@ export class StaffStore implements IStaffStore {
         resolve(res);
       } catch (e) {
         this.logger.error(`invalid staff with profile_id ${profileId}`);
+        reject(e);
+      }
+    });
+  }
+
+  staffByUUID(staffUUID: string): Promise<StaffEntity | undefined> {
+    return new Promise<StaffEntity | undefined>(async (resolve, reject) => {
+      try {
+        const res = await this.db.exec(
+          'SELECT * FROM staff WHERE uuid = $1',
+          staffUUID.trim()
+        );
+
+        if (!res.rows[0]) {
+          this.logger.error(`no staff with uuid ${staffUUID.trim()} found`);
+          return resolve(undefined);
+        }
+
+        const row = res.rows[0] as StaffEntity;
+        if (row.profile_id !== null) row.profile_id = Number(row.profile_id);
+
+        resolve(row);
+      } catch (e) {
+        this.logger.error(
+          `exception finding staff with uuid ${JSON.stringify(e)}`
+        );
         reject(e);
       }
     });

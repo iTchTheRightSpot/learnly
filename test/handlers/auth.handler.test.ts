@@ -17,8 +17,8 @@ describe('auth handler', () => {
   let adapters: Adapters;
 
   beforeAll(async () => {
-    pool = poolInstance();
     const logger = new DevelopmentLogger();
+    pool = poolInstance(logger);
     const db = new DatabaseClient(pool);
     const tx = new TransactionProvider(logger, pool);
     adapters = initializeAdapters(logger, db, tx);
@@ -35,8 +35,8 @@ describe('auth handler', () => {
       await request(app)
         .post(`${env.ROUTE_PREFIX}authentication/register`)
         .send({
-          firstname: 'patient',
-          lastname: 'lastname',
+          firstname: uuid(),
+          lastname: uuid(),
           email: email,
           password: 'paSsworD123#'
         })
@@ -58,8 +58,8 @@ describe('auth handler', () => {
       await request(app)
         .post(`${env.ROUTE_PREFIX}authentication/register`)
         .send({
-          firstname: 'doctor',
-          lastname: 'lastname',
+          firstname: uuid(),
+          lastname: uuid(),
           email: email,
           password: 'paSsworD123#'
         })

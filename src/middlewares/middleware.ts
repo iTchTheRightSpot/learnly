@@ -118,11 +118,11 @@ const refreshToken = (
     }
 
     try {
-      const claims = await service.validateJwt(req.cookies[env.COOKIENAME]);
+      const claims = await service.decode(req.cookies[env.COOKIENAME]);
       req.jwtClaim = claims;
 
       if (isTokenExpiringSoon(logger.date(), claims.exp)) {
-        const obj = await service.createJwt(claims.obj, twoDaysInSeconds);
+        const obj = await service.encode(claims.obj, twoDaysInSeconds);
         res.cookie(env.COOKIENAME, obj.token, {
           maxAge: twoDaysInSeconds * 1000,
           expires: obj.exp

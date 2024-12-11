@@ -163,4 +163,30 @@ export class ProfileStore implements IProfileStore {
       }
     });
   }
+
+  countProfileByStaffIdAndPatientId(
+    staffId: number,
+    patientId: number
+  ): Promise<number> {
+    const q = `
+      SELECT COUNT(p.*) FROM profile p
+      INNER JOIN staff s ON s.profile_id = p.profile_id
+      INNER JOIN patient pa ON pa.profile_id = p.profile_id
+      WHERE s.staff_id = $1 AND pa.patient_id = $2
+    `;
+    return new Promise<number>(async (resolve, reject) => {
+      try {
+        const res = await this.db.exec(q, staffId, patientId);
+
+        if (res.rows[0] === undefined) {
+          return resolve(0);
+        }
+
+        resolve(Number(res.rows[0].count));
+      } catch (e) {
+        this.logger.error(`countProfileByStaffIdAndPatientId err: ${e}`);
+        reject(e);
+      }
+    });
+  }
 }

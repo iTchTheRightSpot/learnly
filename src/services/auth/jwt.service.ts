@@ -8,7 +8,7 @@ import { UnauthorizedException } from '@exceptions/unauthorized.exception';
 export class JwtService implements IJwtService {
   constructor(private readonly logger: ILogger) {}
 
-  createJwt(obj: JwtObject, expirationInSeconds: number): JwtResponse {
+  encode(obj: JwtObject, expirationInSeconds: number): JwtResponse {
     const date = this.logger.date();
     const expireAt = new Date(date);
     expireAt.setSeconds(date.getSeconds() + expirationInSeconds);
@@ -25,7 +25,7 @@ export class JwtService implements IJwtService {
     return { token: token, exp: expireAt };
   }
 
-  async validateJwt(token: string): Promise<JwtClaimsObject> {
+  async decode(token: string): Promise<JwtClaimsObject> {
     try {
       return (await jwt.verify(token, env.JWT_PUB_KEY)) as JwtClaimsObject;
     } catch (e) {

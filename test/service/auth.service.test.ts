@@ -27,7 +27,7 @@ describe('login service', () => {
     };
 
     mockJwtService = {
-      createJwt: jest.fn()
+      encode: jest.fn()
     };
     mockPasswordService = {
       encode: jest.fn(),
@@ -126,7 +126,7 @@ describe('login service', () => {
     mockAdapters.patientStore.patientByProfileId.mockResolvedValue({
       uuid: 'uuid'
     } as PatientEntity);
-    mockJwtService.createJwt.mockResolvedValue({
+    mockJwtService.encode.mockResolvedValue({
       token: 'jwt-string'
     } as JwtResponse);
 
@@ -134,6 +134,6 @@ describe('login service', () => {
     await expect(loginService.loginPatient(dto)).resolves.toEqual({
       token: 'jwt-string'
     });
-    expect(mockJwtService.createJwt).toHaveBeenCalledTimes(1);
+    expect(mockJwtService.encode).toHaveBeenCalledTimes(1);
   });
 });

@@ -21,8 +21,8 @@ describe('profile handler', () => {
   let services: ServicesRegistry;
 
   beforeAll(async () => {
-    pool = poolInstance();
     const logger = new DevelopmentLogger();
+    pool = poolInstance(logger);
     const db = new DatabaseClient(pool);
     const tx = new TransactionProvider(logger, pool);
     adapters = initializeAdapters(logger, db, tx);
@@ -30,12 +30,12 @@ describe('profile handler', () => {
     app = createApp(logger, services);
   });
 
-  const tokenBuilder = async (obj: JwtObject) =>
-    await services.jwtService.createJwt(obj, twoDaysInSeconds);
-
   afterEach(async () => await truncate(pool));
 
   afterAll(async () => await pool.end());
+
+  const tokenBuilder = async (obj: JwtObject) =>
+    await services.jwtService.encode(obj, twoDaysInSeconds);
 
   it('should reject request role in payload is not a DOCTOR', async () => {
     // given
@@ -98,8 +98,8 @@ describe('profile handler', () => {
     await request(app)
       .post(`${env.ROUTE_PREFIX}authentication/register`)
       .send({
-        firstname: 'doctor',
-        lastname: 'lastname',
+        firstname: uuid(),
+        lastname: uuid(),
         email: email,
         password: 'paSsworD123#'
       })
@@ -143,8 +143,8 @@ describe('profile handler', () => {
     await request(app)
       .post(`${env.ROUTE_PREFIX}authentication/register`)
       .send({
-        firstname: 'doctor',
-        lastname: 'lastname',
+        firstname: uuid(),
+        lastname: uuid(),
         email: email,
         password: 'paSsworD123#'
       })

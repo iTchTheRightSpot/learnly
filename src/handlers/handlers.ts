@@ -5,6 +5,7 @@ import { ServicesRegistry } from '@services/services';
 import { env } from '@utils/env';
 import { UnauthorizedException } from '@exceptions/unauthorized.exception';
 import { ProfileHandler } from '@handlers/profile/profile.handler';
+import { ReservationHandler } from '@handlers/reservation/reservation.handler';
 
 // holds all classes that expose endpoints
 export const initializeHandlers = (
@@ -16,7 +17,12 @@ export const initializeHandlers = (
   router.post('/logout', logout);
   return {
     authHandler: new AuthHandler(router, logger, services.authService),
-    profileHandler: new ProfileHandler(router, logger, services.profileService)
+    profileHandler: new ProfileHandler(router, logger, services.profileService),
+    reservationHandler: new ReservationHandler(
+      router,
+      logger,
+      services.reservationService
+    )
   };
 };
 

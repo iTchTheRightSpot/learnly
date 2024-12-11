@@ -12,6 +12,7 @@ import { env } from '@utils/env';
 import { twoDaysInSeconds } from '@utils/util';
 import { JwtObject } from '@models/auth.model';
 import { PermissionEnum, RoleEnum } from '@models/profile.model';
+import { v4 as uuid } from 'uuid';
 
 describe('profile handler', () => {
   let app: Application;
@@ -38,7 +39,7 @@ describe('profile handler', () => {
 
   it('should reject request role in payload is not a DOCTOR', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',
@@ -61,7 +62,7 @@ describe('profile handler', () => {
 
   it('should reject request invalid email', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',
@@ -84,7 +85,7 @@ describe('profile handler', () => {
 
   it('should assign doctor role if not already assigned and reject if already assigned', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',
@@ -128,7 +129,7 @@ describe('profile handler', () => {
 
   it('should update profile & reject request due to invalid email', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',

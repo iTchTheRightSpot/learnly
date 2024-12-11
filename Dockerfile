@@ -1,12 +1,18 @@
-FROM node:20-alpine3.19
+# stage 1
+FROM node:20-alpine3.19 as builder
 
 WORKDIR /api
 
-COPY package.json .
-COPY package-lock.json .
+COPY package.json package-lock.json ./
+RUN npm install
 
 COPY . .
+RUN npm build
 
-RUN npm i
+# stage 2
+FROM gcr.io/distroless/nodejs22-debian12
 
-CMD ["npm", "run", "start"]
+WORKDIR dist
+COPY --from=builder /api/dist .
+
+CMD ["node", "server.js"]

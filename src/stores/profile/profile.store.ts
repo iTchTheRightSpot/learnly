@@ -3,7 +3,8 @@ import {
   PermissionEntity,
   ProfileEntity,
   ProfileRolePermissionEntity,
-  RoleEntity
+  RoleEntity,
+  UpdateProfilePayload
 } from '@models/profile.model';
 import { ILogger } from '@utils/log';
 import { IDatabaseClient } from '@stores/db-client';
@@ -130,6 +131,34 @@ export class ProfileStore implements IProfileStore {
         this.logger.log('role saved');
       } catch (e) {
         this.logger.error(`exception saving role ${e}`);
+        reject(e);
+      }
+    });
+  }
+
+  updateProfileByEmail(body: UpdateProfilePayload): Promise<void> {
+    const q = `
+      UPDATE profile SET firstname = $1, lastname = $2
+      WHERE email = $3
+    `;
+
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const result = await this.db.exec(
+          q,
+          body.firstname.trim(),
+          body.lastname.trim(),
+          body.email.trim()
+        );
+
+        if (result.rowCount === 0) {
+          this.logger.error('no update invalid email');
+          return reject('invalid email');
+        }
+
+        resolve();
+      } catch (e) {
+        this.logger.error(`error updating profile ${e}`);
         reject(e);
       }
     });

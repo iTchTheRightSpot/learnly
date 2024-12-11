@@ -15,7 +15,7 @@ describe('hasRole middleware', () => {
           user_id: 'uuid',
           access_controls: rp
         } as JwtObject,
-        iss: 'LearnlyApp Assessment',
+        iss: 'Coding Assessment',
         iat: 4000,
         exp: 8964651
       };

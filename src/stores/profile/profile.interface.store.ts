@@ -2,7 +2,8 @@ import {
   PermissionEntity,
   ProfileEntity,
   ProfileRolePermissionEntity,
-  RoleEntity
+  RoleEntity,
+  UpdateProfilePayload
 } from '@models/profile.model';
 
 export interface IProfileStore {
@@ -12,4 +13,5 @@ export interface IProfileStore {
   saveProfile(obj: ProfileEntity): Promise<ProfileEntity>;
   saveRole(obj: RoleEntity): Promise<RoleEntity>;
   savePermission(obj: PermissionEntity): Promise<PermissionEntity>;
+  updateProfileByEmail(body: UpdateProfilePayload): Promise<void>;
 }

@@ -15,7 +15,7 @@ export class JwtService implements IJwtService {
 
     const claims: JwtClaimsObject = {
       obj: obj,
-      iss: 'LearnlyApp Assessment',
+      iss: 'Coding Assessment',
       iat: Math.floor(date.getTime() / 1000),
       exp: Math.floor(expireAt.getTime() / 1000)
     };

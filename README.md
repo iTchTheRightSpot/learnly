@@ -1,4 +1,4 @@
-# LearnlyApp Edtech Assessment
+# Assessment
 
 ## Pre-requisite
 

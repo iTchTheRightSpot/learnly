@@ -108,12 +108,11 @@ const refreshToken = (
   service: IJwtService
 ): express.RequestHandler => {
   return async (req, res, next) => {
-    if (!req.cookies || !req.cookies[env.COOKIENAME]) {
-      next();
-      return;
-    }
-
-    if (req.path.endsWith('/logout')) {
+    if (
+      !req.cookies ||
+      !req.cookies[env.COOKIENAME] ||
+      req.path.endsWith('/logout')
+    ) {
       next();
       return;
     }

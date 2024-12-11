@@ -31,26 +31,26 @@ export interface JwtResponse {
 }
 
 export class RegisterAccountPayload {
-  @IsDefined({ message: 'firstname is missing' })
+  @IsDefined({ message: 'firstname cannot be missing' })
   @IsNotEmpty({ message: 'firstname cannot be empty' })
   @IsString({ message: 'firstname has to be a string' })
-  @MaxLength(255, { message: 'firstname must be at most 255 characters' })
+  @MaxLength(100, { message: 'firstname must be at most 100 characters' })
   firstname: string;
 
-  @IsDefined({ message: 'lastname is missing' })
+  @IsDefined({ message: 'lastname cannot be missing' })
   @IsNotEmpty({ message: 'lastname cannot be empty' })
   @IsString({ message: 'lastname has to be a string' })
-  @MaxLength(255, { message: 'lastname must be at most 255 characters' })
+  @MaxLength(100, { message: 'lastname must be at most 100 characters' })
   lastname: string;
 
-  @IsDefined({ message: 'email is missing' })
+  @IsDefined({ message: 'email cannot be missing' })
   @IsNotEmpty({ message: 'email cannot be empty' })
   @IsString({ message: 'email has to be a string' })
-  @MaxLength(255, { message: 'email must be at most 255 characters' })
+  @MaxLength(320, { message: 'email must be at most 320 characters' })
   @IsEmail()
   email: string;
 
-  @IsDefined({ message: 'password is missing' })
+  @IsDefined({ message: 'password cannot be missing' })
   @IsNotEmpty({ message: 'password cannot be empty' })
   @IsString({ message: 'password has to be a string' })
   @IsStrongPassword(
@@ -72,6 +72,7 @@ export class RegisterAccountPayload {
 export class LoginPayload {
   @IsDefined({ message: 'email is missing' })
   @IsNotEmpty({ message: 'email cannot be empty' })
+  @MaxLength(320, { message: 'email must be at most 320 characters' })
   @IsEmail()
   email: string;
 

@@ -14,7 +14,7 @@ const init = () => {
     host: env.DB_CONFIG.host,
     port: env.DB_CONFIG.port,
     database: env.DB_CONFIG.database,
-    max: 20,
+    max: 25,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000
   });

@@ -50,13 +50,13 @@ export class TransactionProvider implements ITransactionProvider {
       if (oc) {
         await oc.query('ROLLBACK');
         this.logger.error(`TRANSACTION ROLLED BACK. ${err}`);
-      } else this.logger.error(`TRANSACTION NEVER STARTED ${err}`)
+      } else this.logger.error(`TRANSACTION NEVER STARTED ${err}`);
       throw err;
     } finally {
       if (oc) {
         oc.release();
         this.logger.log('pool client released');
-      } else this.logger.error('TRANSACTION NEVER STARTED')
+      } else this.logger.error('TRANSACTION NEVER STARTED');
     }
   }
 }

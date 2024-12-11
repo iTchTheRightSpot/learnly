@@ -23,3 +23,6 @@ export const poolInstance = () => {
   }
   return pool;
 };
+
+export const truncate = async (p: Pool) =>
+  await p.query('TRUNCATE profile, role, permission, patient, staff CASCADE');

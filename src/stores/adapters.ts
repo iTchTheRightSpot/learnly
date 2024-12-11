@@ -3,6 +3,8 @@ import { ILogger } from '@utils/log';
 import { IDatabaseClient } from './db-client';
 import { IProfileStore } from './profile/profile.interface.store';
 import { ProfileStore } from './profile/profile.store';
+import { IPatientStore, PatientStore } from './patient/patient.store';
+import { IStaffStore, StaffStore } from './staff/staff.store';
 
 /**
  * Holds all classes that directly communicate with the database.
@@ -10,6 +12,8 @@ import { ProfileStore } from './profile/profile.store';
  */
 export interface Adapters {
   profileStore: IProfileStore;
+  patientStore: IPatientStore;
+  staffStore: IStaffStore;
   transaction?: ITransactionProvider;
 }
 
@@ -26,5 +30,7 @@ export const initializeAdapters = (
   tx?: ITransactionProvider
 ): Adapters => ({
   profileStore: new ProfileStore(logger, client),
+  patientStore: new PatientStore(logger, client),
+  staffStore: new StaffStore(logger, client),
   transaction: tx
 });

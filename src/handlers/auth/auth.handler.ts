@@ -1,5 +1,4 @@
 import {
-  CookieOptions,
   NextFunction,
   Request,
   RequestHandler,
@@ -25,23 +24,6 @@ export class AuthHandler {
     this.register();
   }
 
-  private readonly cookieResponse = (
-    logger: ILogger,
-    res: Response,
-    status: number,
-    obj: any
-  ) => {
-    const options: CookieOptions = {
-      maxAge: obj.exp.getTime() - logger.date().getTime(),
-      expires: obj.exp,
-      httpOnly: true,
-      secure: env.COOKIESECURE,
-      sameSite: env.COOKIE_SAMESITE as 'lax' | 'strict' | 'none'
-    };
-
-    res.status(status).cookie(env.COOKIENAME, obj.jwt, options);
-  };
-
   private readonly register = () => {
     this.router.post(
       '/authentication/register',
@@ -61,12 +43,8 @@ export class AuthHandler {
     next: NextFunction
   ) => {
     try {
-      const obj = await this.service.register(
-        req.body as RegisterAccountPayload
-      );
-      res.setHeader('Content-Type', 'application/json');
-      this.cookieResponse(this.logger, res, 201, obj);
-      res.send({});
+      await this.service.register(req.body as RegisterAccountPayload);
+      res.status(201).send({});
     } catch (e) {
       next(e);
     }
@@ -77,17 +55,25 @@ export class AuthHandler {
     res: Response,
     next: NextFunction
   ) => {
-    const type = req.path['type'];
     let obj: JwtResponse;
 
     try {
-      if (type === 'staff') {
+      if (req.params.type === 'staff') {
         obj = await this.service.loginStaff(req.body as LoginPayload);
       } else {
         obj = await this.service.loginPatient(req.body as LoginPayload);
       }
-      this.cookieResponse(this.logger, res, 204, obj);
-      res.send({});
+
+      res
+        .status(204)
+        .cookie(env.COOKIENAME, obj.token, {
+          maxAge: obj.exp.getTime() - this.logger.date().getTime(),
+          expires: obj.exp,
+          httpOnly: true,
+          secure: env.COOKIESECURE,
+          sameSite: env.COOKIE_SAMESITE as 'lax' | 'strict' | 'none'
+        })
+        .send({});
     } catch (e) {
       next(e);
     }

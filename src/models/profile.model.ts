@@ -1,5 +1,5 @@
 export interface ProfileEntity {
-  profile_id: string;
+  profile_id: number;
   firstname: string;
   lastname: string;
   email: string;
@@ -12,36 +12,28 @@ export enum RoleEnum {
 }
 
 export interface RoleEntity {
-  role_id: string;
+  role_id: number;
   role: RoleEnum;
-  profile_id: string;
+  profile_id: number;
 }
 
 export enum PermissionEnum {
-  CREATE = 'CREATE',
+  WRITE = 'WRITE',
   READ = 'READ'
 }
 
 export interface PermissionEntity {
-  permission_id: string;
+  permission_id: number;
   permission: PermissionEnum;
-  role_id: string;
+  role_id: number;
+}
+
+export interface RolePermissionEntity {
+  role: RoleEntity;
+  permissions: PermissionEntity[];
 }
 
 export interface ProfileRolePermissionEntity {
   profile: ProfileEntity;
-  roles: RoleEntity[];
-  permissions: PermissionEntity[];
-}
-
-export interface PatientEntity {
-  patient_id: string;
-  uuid: string;
-  profile_id: string | null;
-}
-
-export interface StaffEntity {
-  staff_id: string;
-  uuid: string;
-  profile_id: string | null;
+  role_perm: RolePermissionEntity[];
 }

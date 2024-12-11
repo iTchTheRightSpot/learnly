@@ -1,5 +1,4 @@
 import {
-  PatientEntity,
   PermissionEntity,
   ProfileEntity,
   ProfileRolePermissionEntity,
@@ -13,5 +12,4 @@ export interface IProfileStore {
   saveProfile(obj: ProfileEntity): Promise<ProfileEntity>;
   saveRole(obj: RoleEntity): Promise<RoleEntity>;
   savePermission(obj: PermissionEntity): Promise<PermissionEntity>;
-  patientByProfile(profile_id: string): Promise<PatientEntity>;
 }

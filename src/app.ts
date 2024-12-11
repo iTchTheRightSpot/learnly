@@ -32,7 +32,7 @@ export const createApp = (logger: ILogger, services: ServicesRegistry) => {
       ]
     })
   );
-  // app.use(middleware.refreshToken(logger, services.jwtService));
+  app.use(middleware.refreshToken(logger, services.jwtService));
   app.use(express.static(path.join(__dirname, 'public')));
   app.use(
     cors({

@@ -5,12 +5,21 @@ import { HttpException } from '@exceptions/http.exception';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { UnauthorizedError } from 'express-jwt';
+import { IJwtService } from '@services/auth/auth.interface.service';
+import { RoleEnum } from '@models/profile.model';
+import { RolePermission } from '@models/auth.model';
+import { twoDaysInSeconds } from '@utils/util';
+import { env } from '@utils/env';
 
 export const middleware = {
   log: (log: ILogger) => logger(log),
   error: (log: ILogger) => error(log),
   requestBody: <T extends object>(log: ILogger, type: ClassConstructor<T>) =>
-    requestBody(log, type)
+    requestBody(log, type),
+  refreshToken: (log: ILogger, ser: IJwtService) => refreshToken(log, ser),
+  hasRole: (log: ILogger, role: RoleEnum) => hasRole(log, role),
+  hasRoleAndPermissions: (log: ILogger, rp: RolePermission) =>
+    hasRoleAndPermissions(log, rp)
 };
 
 // ref docs https://expressjs.com/en/resources/middleware/morgan.html
@@ -85,5 +94,89 @@ const requestBody = <T extends object>(
           .status(400)
           .send({ status: 400, message: 'catch validation failed' });
       });
+  };
+};
+
+function isTokenExpiringSoon(date: Date, expirationInSeconds: number): boolean {
+  const oneDayInSeconds = 24 * 60 * 60;
+  const nowInSeconds = Math.floor(date.getTime() / 1000);
+  return expirationInSeconds - nowInSeconds <= oneDayInSeconds;
+}
+
+const refreshToken = (
+  logger: ILogger,
+  service: IJwtService
+): express.RequestHandler => {
+  return async (req, res, next) => {
+    if (!req.cookies || !req.cookies[env.COOKIENAME]) {
+      next();
+      return;
+    }
+
+    if (req.path.endsWith('/logout')) {
+      next();
+      return;
+    }
+
+    try {
+      const claims = await service.validateJwt(req.cookies[env.COOKIENAME]);
+      req.jwtClaim = claims;
+
+      if (isTokenExpiringSoon(logger.date(), claims.exp)) {
+        const obj = await service.createJwt(claims.obj, twoDaysInSeconds);
+        res.cookie(env.COOKIENAME, obj.token, {
+          maxAge: twoDaysInSeconds * 1000,
+          expires: obj.exp
+        });
+        logger.log(`${refreshToken.name}: refreshing token`);
+      }
+
+      next();
+    } catch (e) {
+      logger.error(`${refreshToken.name} ${e}`);
+      res.status(401).send({ message: 'unauthorized', status: 401 });
+    }
+  };
+};
+
+const hasRole = (logger: ILogger, role: RoleEnum): express.RequestHandler => {
+  return (req, res, next) => {
+    if (!req.jwtClaim) {
+      logger.error('access denied jwtClaims not present');
+      res.status(403).send({ status: 403, message: 'access denied' });
+    } else if (
+      !req.jwtClaim.obj.access_controls.some((obj) => obj.role === role)
+    ) {
+      logger.error('access denied not matching role');
+      res.status(403).send({ status: 403, message: 'access denied' });
+    } else next();
+  };
+};
+
+const validateRoleAndPermissions = (
+  rp: RolePermission,
+  rps: RolePermission[]
+) => {
+  const matchingRole = rps.find((obj) => obj.role === rp.role);
+  if (!matchingRole) return false;
+  return rp.permissions.every((permission) =>
+    matchingRole.permissions.includes(permission)
+  );
+};
+
+const hasRoleAndPermissions = (
+  logger: ILogger,
+  rp: RolePermission
+): express.RequestHandler => {
+  return (req, res, next) => {
+    if (!req.jwtClaim) {
+      logger.error('access denied jwtClaims not present in request');
+      res.status(403).send({ status: 403, message: 'access denied' });
+    } else if (
+      !validateRoleAndPermissions(rp, req.jwtClaim!.obj.access_controls)
+    ) {
+      logger.error('access denied not matching role or permission');
+      res.status(403).send({ status: 403, message: 'access denied' });
+    } else next();
   };
 };

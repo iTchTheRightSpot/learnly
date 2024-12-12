@@ -1,4 +1,4 @@
-name: test & dockerrize
+name: test & build
 on:
   push:
     branches:
@@ -52,6 +52,9 @@ jobs:
 
       - name: Test
         run: npm run test
+
+      - name: Build Dockerfile
+        run: docker build -t iTchTheRightSpot/learnly-assessment .
 
       - name: Compose down
         run: docker compose down -v

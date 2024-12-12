@@ -27,12 +27,12 @@ export class AuthHandler {
   private readonly register = () => {
     this.router.post(
       '/authentication/register',
-      middleware.requestBody(this.logger, RegisterAccountPayload),
+      middleware.validatePayload(this.logger, RegisterAccountPayload),
       this.create
     );
     this.router.post(
       '/authentication/login/:type',
-      middleware.requestBody(this.logger, LoginPayload),
+      middleware.validatePayload(this.logger, LoginPayload),
       this.login
     );
   };

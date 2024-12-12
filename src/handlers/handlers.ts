@@ -6,6 +6,7 @@ import { env } from '@utils/env';
 import { UnauthorizedException } from '@exceptions/unauthorized.exception';
 import { ProfileHandler } from '@handlers/profile/profile.handler';
 import { ReservationHandler } from '@handlers/reservation/reservation.handler';
+import { TestTypeHandler } from '@handlers/test_types/test_type.handler';
 
 // holds all classes that expose endpoints
 export const initializeHandlers = (
@@ -22,7 +23,8 @@ export const initializeHandlers = (
       router,
       logger,
       services.reservationService
-    )
+    ),
+    typesHandler: new TestTypeHandler(router, logger, services.typesService)
   };
 };
 

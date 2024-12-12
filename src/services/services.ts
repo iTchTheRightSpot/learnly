@@ -9,6 +9,7 @@ import {
   IReservationService,
   ReservationService
 } from './reservation/reservation.service';
+import { ITypesService, TestTypeService } from './test_type/test-type.service';
 
 // holds all class that perform some business logic
 export interface ServicesRegistry {
@@ -16,6 +17,7 @@ export interface ServicesRegistry {
   authService: IAuthService;
   jwtService: IJwtService;
   reservationService: IReservationService;
+  typesService: ITypesService;
 }
 
 // initializes all classes that perform business logic
@@ -29,6 +31,7 @@ export const initializeServices = (
     authService: new AuthService(logger, ads, jwt, ps),
     profileService: new ProfileService(logger, ads),
     jwtService: jwt,
-    reservationService: new ReservationService(logger, ads)
+    reservationService: new ReservationService(logger, ads),
+    typesService: new TestTypeService(logger, ads)
   };
 };

@@ -94,7 +94,7 @@ describe('reservation service', () => {
         patient_id: 1
       } as PatientEntity);
       mockAdapters.profileStore.countProfileByStaffIdAndPatientId.mockResolvedValue(
-        2
+        1
       );
 
       // method to test & assert
@@ -121,7 +121,7 @@ describe('reservation service', () => {
         patient_id: 1
       } as PatientEntity);
       mockAdapters.profileStore.countProfileByStaffIdAndPatientId.mockResolvedValue(
-        1
+        0
       );
       mockAdapters.testTypeStore.testTypesByStaffId.mockResolvedValue([
         { name: 'blood work' } as TestTypeEntity
@@ -155,7 +155,7 @@ describe('reservation service', () => {
         patient_id: 1
       } as PatientEntity);
       mockAdapters.profileStore.countProfileByStaffIdAndPatientId.mockResolvedValue(
-        1
+        0
       );
       mockAdapters.testTypeStore.testTypesByStaffId.mockResolvedValue([
         { name: 'blood work' } as TestTypeEntity
@@ -189,7 +189,7 @@ describe('reservation service', () => {
         patient_id: 1
       } as PatientEntity);
       mockAdapters.profileStore.countProfileByStaffIdAndPatientId.mockResolvedValue(
-        1
+        0
       );
       mockAdapters.testTypeStore.testTypesByStaffId.mockResolvedValue([
         { name: 'IV drip', duration: 3600, clean_up_time: 30 * 60, test_id: 1 },

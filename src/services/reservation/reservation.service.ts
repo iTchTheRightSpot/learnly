@@ -67,7 +67,7 @@ export class ReservationService implements IReservationService {
         staff.staff_id,
         patient.patient_id
       );
-    if (count > 1)
+    if (count == 1)
       throw new BadRequestException('cannot make a reservation for yourself');
 
     const types = await this.validateStaffTestTypes(

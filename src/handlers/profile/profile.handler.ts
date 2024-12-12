@@ -31,14 +31,14 @@ export class ProfileHandler {
         role: RoleEnum.DOCTOR,
         permissions: [PermissionEnum.WRITE]
       }),
-      middleware.requestBody(this.logger, RolePayload),
+      middleware.validatePayload(this.logger, RolePayload),
       this.staff
     );
 
     this.router.patch(
       '/profile',
       middleware.hasRole(this.logger, RoleEnum.PATIENT),
-      middleware.requestBody(this.logger, UpdateProfilePayload),
+      middleware.validatePayload(this.logger, UpdateProfilePayload),
       this.update
     );
   };

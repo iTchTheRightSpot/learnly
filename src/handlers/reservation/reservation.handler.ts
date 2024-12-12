@@ -22,7 +22,7 @@ export class ReservationHandler {
   private readonly register = () => {
     this.router.post(
       '/reservation',
-      middleware.requestBody(this.logger, ReservationPayload),
+      middleware.validatePayload(this.logger, ReservationPayload),
       this.create
     );
   };

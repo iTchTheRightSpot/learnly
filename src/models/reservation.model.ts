@@ -5,6 +5,7 @@ import {
   MaxLength,
   MinLength
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export enum ReservationStatus {
   CONFIRMED = 'CONFIRMED',
@@ -48,7 +49,8 @@ export class ReservationPayload {
   email: string;
 
   @IsDefined({ message: 'please select 1 or more test_types' })
-  @IsNotEmpty({ message: 'please select 1 or more test_types' })
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  @IsString({ each: true, message: 'every test_type must be a string' })
   test_types: string[];
 
   @IsDefined({ message: 'please select an appointment date & time' })

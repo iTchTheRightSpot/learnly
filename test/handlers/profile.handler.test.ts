@@ -12,6 +12,7 @@ import { env } from '@utils/env';
 import { twoDaysInSeconds } from '@utils/util';
 import { JwtObject } from '@models/auth.model';
 import { PermissionEnum, RoleEnum } from '@models/profile.model';
+import { v4 as uuid } from 'uuid';
 
 describe('profile handler', () => {
   let app: Application;
@@ -20,8 +21,8 @@ describe('profile handler', () => {
   let services: ServicesRegistry;
 
   beforeAll(async () => {
-    pool = poolInstance();
     const logger = new DevelopmentLogger();
+    pool = poolInstance(logger);
     const db = new DatabaseClient(pool);
     const tx = new TransactionProvider(logger, pool);
     adapters = initializeAdapters(logger, db, tx);
@@ -29,16 +30,16 @@ describe('profile handler', () => {
     app = createApp(logger, services);
   });
 
-  const tokenBuilder = async (obj: JwtObject) =>
-    await services.jwtService.createJwt(obj, twoDaysInSeconds);
-
   afterEach(async () => await truncate(pool));
 
   afterAll(async () => await pool.end());
 
+  const tokenBuilder = async (obj: JwtObject) =>
+    await services.jwtService.encode(obj, twoDaysInSeconds);
+
   it('should reject request role in payload is not a DOCTOR', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',
@@ -61,7 +62,7 @@ describe('profile handler', () => {
 
   it('should reject request invalid email', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',
@@ -84,7 +85,7 @@ describe('profile handler', () => {
 
   it('should assign doctor role if not already assigned and reject if already assigned', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',
@@ -97,8 +98,8 @@ describe('profile handler', () => {
     await request(app)
       .post(`${env.ROUTE_PREFIX}authentication/register`)
       .send({
-        firstname: 'doctor',
-        lastname: 'lastname',
+        firstname: uuid(),
+        lastname: uuid(),
         email: email,
         password: 'paSsworD123#'
       })
@@ -128,7 +129,7 @@ describe('profile handler', () => {
 
   it('should update profile & reject request due to invalid email', async () => {
     // given
-    const email = 'doctor@email.com';
+    const email = `${uuid()}@email.com`;
     const token = (
       await tokenBuilder({
         user_id: 'uuid',
@@ -142,8 +143,8 @@ describe('profile handler', () => {
     await request(app)
       .post(`${env.ROUTE_PREFIX}authentication/register`)
       .send({
-        firstname: 'doctor',
-        lastname: 'lastname',
+        firstname: uuid(),
+        lastname: uuid(),
         email: email,
         password: 'paSsworD123#'
       })

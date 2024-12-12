@@ -9,6 +9,7 @@ import { createApp } from '@learnly/app';
 import { poolInstance, truncate } from '@mock/pool';
 import { DatabaseClient } from '@stores/db-client';
 import { TransactionProvider } from '@stores/transaction';
+import { v4 as uuid } from 'uuid';
 
 describe('auth handler', () => {
   let app: Application;
@@ -16,8 +17,8 @@ describe('auth handler', () => {
   let adapters: Adapters;
 
   beforeAll(async () => {
-    pool = poolInstance();
     const logger = new DevelopmentLogger();
+    pool = poolInstance(logger);
     const db = new DatabaseClient(pool);
     const tx = new TransactionProvider(logger, pool);
     adapters = initializeAdapters(logger, db, tx);
@@ -30,12 +31,13 @@ describe('auth handler', () => {
 
   describe('flow to register & login', () => {
     it('patient (success)', async () => {
+      const email = `${uuid()}@email.com`;
       await request(app)
         .post(`${env.ROUTE_PREFIX}authentication/register`)
         .send({
-          firstname: 'patient',
-          lastname: 'lastname',
-          email: 'patient@email.com',
+          firstname: uuid(),
+          lastname: uuid(),
+          email: email,
           password: 'paSsworD123#'
         })
         .set('Content-Type', 'application/json')
@@ -44,22 +46,21 @@ describe('auth handler', () => {
 
       await request(app)
         .post(`${env.ROUTE_PREFIX}authentication/login/patient`)
-        .send({
-          email: 'patient@email.com',
-          password: 'paSsworD123#'
-        })
+        .send({ email: email, password: 'paSsworD123#' })
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
         .expect(204);
     });
 
     it('(doctor) reject request. role and permissions have not been added', async () => {
+      const email = `${uuid()}@email.com`;
+
       await request(app)
         .post(`${env.ROUTE_PREFIX}authentication/register`)
         .send({
-          firstname: 'doctor',
-          lastname: 'lastname',
-          email: 'doctor@email.com',
+          firstname: uuid(),
+          lastname: uuid(),
+          email: email,
           password: 'paSsworD123#'
         })
         .set('Content-Type', 'application/json')
@@ -68,10 +69,7 @@ describe('auth handler', () => {
 
       await request(app)
         .post(`${env.ROUTE_PREFIX}authentication/login/staff`)
-        .send({
-          email: 'doctor@email.com',
-          password: 'paSsworD123#'
-        })
+        .send({ email: email, password: 'paSsworD123#' })
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
         .expect(404)

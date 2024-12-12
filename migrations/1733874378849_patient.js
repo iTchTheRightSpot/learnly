@@ -24,7 +24,7 @@ exports.up = (pgm) => {
         unique: true,
         default: pgm.func('gen_random_uuid()')
       },
-      profile_id: { type: 'BIGINT', notNull: true }
+      profile_id: { type: 'BIGINT', notNull: false }
     },
     { ifNotExists: true }
   );

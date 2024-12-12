@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 export interface IPatientStore {
   patientByProfileId(profileId: number): Promise<PatientEntity | undefined>;
   save(p: PatientEntity): Promise<PatientEntity>;
+  patientByEmail(uuid: string): Promise<PatientEntity | undefined>;
 }
 
 export class PatientStore implements IPatientStore {
@@ -64,6 +65,36 @@ export class PatientStore implements IPatientStore {
         this.logger.log('new patient saved');
       } catch (e) {
         this.logger.error(`error saving to patient table ${e}`);
+        reject(e);
+      }
+    });
+  }
+
+  patientByEmail(email: string): Promise<PatientEntity | undefined> {
+    const q = `
+      SELECT p.* FROM patient p
+      INNER JOIN profile pr ON pr.profile_id = p.profile_id
+      WHERE pr.email = $1
+    `;
+    return new Promise<PatientEntity | undefined>(async (resolve, reject) => {
+      try {
+        const result = await this.db.exec(q, email);
+
+        const row = result.rows[0];
+
+        if (row === undefined || row === null) {
+          this.logger.error(`no patient with email ${email}`);
+          resolve(undefined);
+          return;
+        }
+
+        const res = row as PatientEntity;
+        row.patient_id = Number(row.patient_id);
+        if (row.profile_id !== null) row.profile_id = Number(row.profile_id);
+
+        resolve(res);
+      } catch (e) {
+        this.logger.error(`invalid patient with email ${email}`);
         reject(e);
       }
     });

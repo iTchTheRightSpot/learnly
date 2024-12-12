@@ -17,9 +17,9 @@ describe('patient store', () => {
   let profile: ProfileEntity;
 
   beforeAll(async () => {
-    pool = poolInstance();
-    client = await pool.connect();
     const logger = new DevelopmentLogger();
+    pool = poolInstance(logger);
+    client = await pool.connect();
     const db = new MockLiveDatabaseClient(client);
     store = new StaffStore(logger, db);
     profileStore = new ProfileStore(logger, db);

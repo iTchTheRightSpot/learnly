@@ -1,28 +1,17 @@
 import { Pool } from 'pg';
-import { env } from '@utils/env';
+import { dbPool } from '@utils/util';
+import { ILogger } from '@utils/log';
 
 let pool: Pool | undefined = undefined;
 
-export const poolInstance = () => {
+export const poolInstance = (logger: ILogger) => {
   if (!pool) {
-    try {
-      pool = new Pool({
-        user: env.DB_CONFIG.user,
-        password: env.DB_CONFIG.password,
-        host: env.DB_CONFIG.host,
-        port: env.DB_CONFIG.port,
-        database: env.DB_CONFIG.database,
-        max: 40,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000
-      });
-    } catch (e) {
-      console.error(`failed to initialize db connection ${e}`);
-      process.exit(1);
-    }
+    pool = dbPool(logger);
   }
   return pool;
 };
 
 export const truncate = async (p: Pool) =>
-  await p.query('TRUNCATE profile, role, permission, patient, staff CASCADE');
+  await p.query(
+    'TRUNCATE permission, role, profile, reservation_test_type, reservation, staff_test_type, test_type, staff, patient CASCADE'
+  );

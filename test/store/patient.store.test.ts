@@ -17,9 +17,9 @@ describe('patient store', () => {
   let profile: ProfileEntity;
 
   beforeAll(async () => {
-    pool = poolInstance();
-    client = await pool.connect();
     const logger = new DevelopmentLogger();
+    pool = poolInstance(logger);
+    client = await pool.connect();
     const db = new MockLiveDatabaseClient(client);
     store = new PatientStore(logger, db);
     profileStore = new ProfileStore(logger, db);
@@ -42,7 +42,7 @@ describe('patient store', () => {
     await pool.end();
   });
 
-  it('should save patient & retrieve by profile_id', async () => {
+  it('should save patient & retrieve by profile_id & uuid', async () => {
     const id = uuid();
     // method to test
     const patient = await store.save({
@@ -60,5 +60,11 @@ describe('patient store', () => {
 
     // assert
     expect(find).toEqual(patient);
+
+    // method to test
+    const findByEmail = await store.patientByEmail(profile.email);
+
+    // assert
+    expect(findByEmail).toEqual(patient);
   });
 });

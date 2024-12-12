@@ -21,7 +21,7 @@ export interface IProfileService {
 export class ProfileService implements IProfileService {
   constructor(
     private readonly logger: ILogger,
-    private readonly adapter: Adapters
+    private readonly adapters: Adapters
   ) {}
 
   /**
@@ -41,7 +41,7 @@ export class ProfileService implements IProfileService {
       throw new BadRequestException('role has to be a Doctor');
 
     const obj =
-      await this.adapter.profileStore.profileRolesAndPermissionByEmail(
+      await this.adapters.profileStore.profileRolesAndPermissionByEmail(
         body.email.trim()
       );
 
@@ -52,7 +52,7 @@ export class ProfileService implements IProfileService {
       throw new BadRequestException(`role already associated to ${body.email}`);
 
     try {
-      await this.adapter.transaction!.runInTransaction(async (adapters) => {
+      await this.adapters.transaction!.runInTransaction(async (adapters) => {
         let staff = await adapters.staffStore.staffByProfileId(
           obj.profile.profile_id!!
         );
@@ -88,7 +88,7 @@ export class ProfileService implements IProfileService {
 
   async update(body: UpdateProfilePayload): Promise<void> {
     try {
-      await this.adapter.profileStore.updateProfileByEmail(body);
+      await this.adapters.profileStore.updateProfileByEmail(body);
       this.logger.log('updated profile');
     } catch (e) {
       this.logger.error(e);

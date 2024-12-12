@@ -14,8 +14,10 @@ import { env } from '@utils/env';
 export const middleware = {
   log: (log: ILogger) => logger(log),
   error: (log: ILogger) => error(log),
-  requestBody: <T extends object>(log: ILogger, type: ClassConstructor<T>) =>
-    requestBody(log, type),
+  validatePayload: <T extends object>(
+    log: ILogger,
+    type: ClassConstructor<T>
+  ) => validatePayload(log, type),
   refreshToken: (log: ILogger, ser: IJwtService) => refreshToken(log, ser),
   hasRole: (log: ILogger, role: RoleEnum) => hasRole(log, role),
   hasRoleAndPermissions: (log: ILogger, rp: RolePermission) =>
@@ -71,7 +73,7 @@ const error = (logger: ILogger): express.ErrorRequestHandler => {
   };
 };
 
-const requestBody = <T extends object>(
+const validatePayload = <T extends object>(
   log: ILogger,
   type: ClassConstructor<T>
 ): express.RequestHandler => {
@@ -83,13 +85,13 @@ const requestBody = <T extends object>(
             ? Object.values(errors[0].constraints)[0]
             : 'validation failed';
 
-          log.error(`${requestBody.name} request error ${message}`);
+          log.error(`${validatePayload.name} request error ${message}`);
 
           res.status(400).send({ status: 400, message: message });
         } else next();
       })
       .catch((err) => {
-        log.error(`${requestBody.name} catch block ${JSON.stringify(err)}`);
+        log.error(`${validatePayload.name} catch block ${JSON.stringify(err)}`);
         res
           .status(400)
           .send({ status: 400, message: 'catch validation failed' });
@@ -97,11 +99,14 @@ const requestBody = <T extends object>(
   };
 };
 
-function isTokenExpiringSoon(date: Date, expirationInSeconds: number): boolean {
+const isTokenExpiringSoon = (
+  date: Date,
+  expirationInSeconds: number
+): boolean => {
   const oneDayInSeconds = 24 * 60 * 60;
   const nowInSeconds = Math.floor(date.getTime() / 1000);
   return expirationInSeconds - nowInSeconds <= oneDayInSeconds;
-}
+};
 
 const refreshToken = (
   logger: ILogger,
@@ -118,11 +123,11 @@ const refreshToken = (
     }
 
     try {
-      const claims = await service.validateJwt(req.cookies[env.COOKIENAME]);
+      const claims = await service.decode(req.cookies[env.COOKIENAME]);
       req.jwtClaim = claims;
 
       if (isTokenExpiringSoon(logger.date(), claims.exp)) {
-        const obj = await service.createJwt(claims.obj, twoDaysInSeconds);
+        const obj = await service.encode(claims.obj, twoDaysInSeconds);
         res.cookie(env.COOKIENAME, obj.token, {
           maxAge: twoDaysInSeconds * 1000,
           expires: obj.exp

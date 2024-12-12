@@ -5,6 +5,11 @@ import { IProfileStore } from './profile/profile.interface.store';
 import { ProfileStore } from './profile/profile.store';
 import { IPatientStore, PatientStore } from './patient/patient.store';
 import { IStaffStore, StaffStore } from './staff/staff.store';
+import { ITestTypeStore, TestTypeStore } from './test_type/test-type.store';
+import {
+  IReservationStore,
+  ReservationStore
+} from './reservation/reservation.store';
 
 /**
  * Holds all classes that directly communicate with the database.
@@ -14,6 +19,8 @@ export interface Adapters {
   profileStore: IProfileStore;
   patientStore: IPatientStore;
   staffStore: IStaffStore;
+  testTypeStore: ITestTypeStore;
+  reservationStore: IReservationStore;
   transaction?: ITransactionProvider;
 }
 
@@ -32,5 +39,7 @@ export const initializeAdapters = (
   profileStore: new ProfileStore(logger, client),
   patientStore: new PatientStore(logger, client),
   staffStore: new StaffStore(logger, client),
+  testTypeStore: new TestTypeStore(logger, client),
+  reservationStore: new ReservationStore(logger, client),
   transaction: tx
 });

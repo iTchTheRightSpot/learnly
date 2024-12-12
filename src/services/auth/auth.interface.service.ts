@@ -7,8 +7,8 @@ import {
 } from '@models/auth.model';
 
 export interface IJwtService {
-  createJwt(obj: JwtObject, expirationInSeconds: number): JwtResponse;
-  validateJwt(token: string): Promise<JwtClaimsObject>;
+  encode(obj: JwtObject, expirationInSeconds: number): JwtResponse;
+  decode(token: string): Promise<JwtClaimsObject>;
 }
 
 export interface IAuthService {

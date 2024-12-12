@@ -115,7 +115,7 @@ export class AuthService implements IAuthService {
       )
     } as JwtObject;
 
-    return this.jwtService.createJwt(jwtObj, twoDaysInSeconds);
+    return this.jwtService.encode(jwtObj, twoDaysInSeconds);
   }
 
   async loginStaff(dto: LoginPayload): Promise<JwtResponse> {
@@ -138,6 +138,6 @@ export class AuthService implements IAuthService {
       )
     } as JwtObject;
 
-    return this.jwtService.createJwt(jwtObj, twoDaysInSeconds);
+    return this.jwtService.encode(jwtObj, twoDaysInSeconds);
   }
 }

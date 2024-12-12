@@ -14,4 +14,8 @@ export interface IProfileStore {
   saveRole(obj: RoleEntity): Promise<RoleEntity>;
   savePermission(obj: PermissionEntity): Promise<PermissionEntity>;
   updateProfileByEmail(body: UpdateProfilePayload): Promise<void>;
+  countProfileByStaffIdAndPatientId(
+    staffId: number,
+    patientId: number
+  ): Promise<number>;
 }

@@ -13,8 +13,8 @@ describe('refreshToken middleware', () => {
 
   beforeEach(() => {
     jwtService = {
-      validateJwt: jest.fn(),
-      createJwt: jest.fn()
+      decode: jest.fn(),
+      encode: jest.fn()
     };
     app = express();
     app.use(cookieParser());
@@ -30,13 +30,13 @@ describe('refreshToken middleware', () => {
   it('should call next token not present', async () => {
     const res = await request(app).get('/route');
     expect(res.status).toBe(200);
-    expect(jwtService.validateJwt).toBeCalledTimes(0);
+    expect(jwtService.decode).toBeCalledTimes(0);
   });
 
   it('should call next. path is logout', async () => {
     const res = await request(app).get('/route/logout');
     expect(res.status).toBe(200);
-    expect(jwtService.validateJwt).toBeCalledTimes(0);
+    expect(jwtService.decode).toBeCalledTimes(0);
   });
 
   it('should not refresh token as it is not within 1 day of expiration', async () => {
@@ -49,7 +49,7 @@ describe('refreshToken middleware', () => {
     } as JwtClaimsObject;
 
     // when
-    jwtService.validateJwt.mockResolvedValue(obj);
+    jwtService.decode.mockResolvedValue(obj);
 
     // request
     const res = await request(app)
@@ -58,8 +58,8 @@ describe('refreshToken middleware', () => {
 
     // assert
     expect(res.status).toBe(200);
-    expect(jwtService.validateJwt).toBeCalledTimes(1);
-    expect(jwtService.createJwt).toBeCalledTimes(0);
+    expect(jwtService.decode).toBeCalledTimes(1);
+    expect(jwtService.encode).toBeCalledTimes(0);
   });
 
   it('should refresh the token as it is within 1 day of expiration', async () => {
@@ -69,8 +69,8 @@ describe('refreshToken middleware', () => {
     const claims = { exp: sub5Hrs } as JwtClaimsObject;
 
     // when
-    jwtService.validateJwt.mockResolvedValue(claims);
-    jwtService.createJwt.mockResolvedValue({} as JwtResponse);
+    jwtService.decode.mockResolvedValue(claims);
+    jwtService.encode.mockResolvedValue({} as JwtResponse);
 
     // request
     const res = await request(app)
@@ -79,7 +79,7 @@ describe('refreshToken middleware', () => {
 
     // assert
     expect(res.status).toBe(200);
-    expect(jwtService.validateJwt).toBeCalledTimes(1);
-    expect(jwtService.createJwt).toBeCalledTimes(1);
+    expect(jwtService.decode).toBeCalledTimes(1);
+    expect(jwtService.encode).toBeCalledTimes(1);
   });
 });

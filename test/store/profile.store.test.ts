@@ -18,12 +18,10 @@ describe('profile store', () => {
   let store: IProfileStore;
 
   beforeAll(async () => {
-    pool = poolInstance();
+    const logger = new DevelopmentLogger();
+    pool = poolInstance(logger);
     client = await pool.connect();
-    store = new ProfileStore(
-      new DevelopmentLogger(),
-      new MockLiveDatabaseClient(client)
-    );
+    store = new ProfileStore(logger, new MockLiveDatabaseClient(client));
   });
 
   beforeEach(async () => await client.query('BEGIN'));

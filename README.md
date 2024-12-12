@@ -72,9 +72,13 @@
 
 ## Run app
 
-1. Run `npm run start` to start the app (app runs on PORT 400 by default).
-2. Run `npm run test` to run test.
-3. [Api documentation](./API.md)
+1. Run database migration:
+   - If you are using default `.env` variables and on UNIX based OS `bash migrate.sh`, else
+   - `DATABASE_URL=postgres://<DB_USERNAME>:<DB_PASSWORD>@localhost:<DB_PORT>/<DB_DATABASE> npm run migrate up`.
+     Note: all PREFIXED with `DB_` should be as it is in your .env
+2. Run `npm run start` to start the app (app runs on PORT 4000 by default).
+3. Run `npm run test` to run test.
+4. [Api documentation](./API.md)
 
 ## CI/CD Overview
 

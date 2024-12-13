@@ -21,5 +21,27 @@ services:
       timeout: 5s
       retries: 5
 
+#  api:
+#    build: .
+#    container_name: assessment-api
+#    env_file:
+#      - ./.env
+#    depends_on:
+#      pg:
+#        condition: service_healthy
+#    ports:
+#      - ${PORT}:${PORT}
+#    environment:
+#      NODE_ENV: ${NODE_ENV}
+#      PORT: ${PORT}
+#      DB_USERNAME: ${DB_PASSWORD}
+#      DB_PASSWORD: ${DB_USERNAME}
+#      DB_HOST: ${DB_HOST}
+#      DB_PORT: ${DB_PORT}
+#      DB_DATABASE: ${DB_DATABASE}
+#      PRIV_KEY_PATH: ${PRIV_KEY_PATH}
+#      PUB_KEY_PATH: ${PUB_KEY_PATH}
+#      UI_URL: ${UI_URL}
+
 volumes:
   pg-db-data:

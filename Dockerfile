@@ -12,7 +12,7 @@ RUN npm run build
 # stage 2
 FROM gcr.io/distroless/nodejs22-debian12
 
-WORKDIR dist
+WORKDIR /dist
 COPY --from=builder /api/dist .
 
-CMD ["node", "server.js"]
+CMD ["node", "/dist/server.js"]

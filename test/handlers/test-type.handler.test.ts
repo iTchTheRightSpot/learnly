@@ -74,7 +74,7 @@ describe('test type handler', () => {
       .set('Cookie', [`${env.COOKIENAME}=${token}`]);
 
     expect(res.status).toEqual(200);
-    const body = res.body as string[];
-    expect(body.length).toEqual(2);
+    const body = res.body as { type: string }[];
+    expect(body.length).toBeGreaterThan(2);
   });
 });

@@ -2,7 +2,7 @@ import { ILogger } from '@utils/log';
 import { Adapters } from '@stores/adapters';
 
 export interface ITypesService {
-  types(): Promise<string[]>;
+  types(): Promise<{type: string}[]>;
 }
 
 export class TestTypeService implements ITypesService {
@@ -12,8 +12,8 @@ export class TestTypeService implements ITypesService {
   ) {}
 
   // returns all test types or services offered by the Clinic
-  async types(): Promise<string[]> {
+  async types(): Promise<{type: string}[]> {
     const types = await this.adapters.testTypeStore.allTestTypes();
-    return types.map((type) => type.name);
+    return types.map((type) => ({ type: type.name }));
   }
 }

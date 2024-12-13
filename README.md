@@ -39,10 +39,17 @@
 5. Documentation:
    - Include a README with setup instructions, API documentation, and an overview of your CI/CD pipeline.
 
+## Assumptions
+1. Anyone can register and by default he/she is a patient.
+2. Only a Doctor with WRITE permission can upgrade a user to a role Doctor.
+3. All routes are protected except registration & login.
+   - All routes require PATIENT role except `/api/v1/profile/staff` which
+   requires role DOCTOR and permission WRITE. 
+
 ## Pre-requisite
 
-1. Node version 20 or greater installed
-2. Docker or (PostgreSQL & MongoDB) installed.
+1. Node version 20 or greater installed.
+2. Docker or PostgreSQL installed.
 
 ## Clone
 
@@ -68,17 +75,22 @@
    PUB_KEY_PATH='./keys/public.key'
    ```
 4. You can replace the database name & credentials if necessary.
-5. Install the necessary dependencies by running the command `npm i`.
 
-## Run app
+## Run app using Docker
 
-1. Run database migration:
-   - If you are using default `.env` variables and on UNIX based OS `bash migrate.sh`, else
+1. Uncomment `api` service.
+2. Run `docker compose up -d` and you are all set.
+
+## Run app without Docker
+1. Install the necessary dependencies by running the command `npm i`.
+2. Assuming PostgreSQL is up and running, run database migration:
    - `DATABASE_URL=postgres://<DB_USERNAME>:<DB_PASSWORD>@localhost:<DB_PORT>/<DB_DATABASE> npm run migrate up`.
-     Note: all PREFIXED with `DB_` should be as it is in your .env
-2. Run `npm run start` to start the app (app runs on PORT 4000 by default).
-3. Run `npm run test` to run test.
-4. [Api documentation](./API.md)
+3. Run `npm run start` to start the app (app runs on PORT 4000 by default).
+
+## Test
+1. After database base migration, run `npm run test` to run test.
+
+## [Api documentation](./API.md)
 
 ## CI/CD Overview
 

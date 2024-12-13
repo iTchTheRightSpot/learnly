@@ -39,11 +39,12 @@ export class TransactionProvider implements ITransactionProvider {
 
     try {
       oc = await this.pool.connect();
-      const client = new DatabaseTransactionClient(oc);
       this.logger.log(isolation);
-      await client.exec(isolation);
-      const result = await txFunc(initializeAdapters(this.logger, client));
-      await client.exec('COMMIT');
+      await oc.query(isolation);
+      const result = await txFunc(
+        initializeAdapters(this.logger, new DatabaseTransactionClient(oc))
+      );
+      await oc.query('COMMIT');
       this.logger.log('TRANSACTION COMMITTED');
       return result;
     } catch (err) {

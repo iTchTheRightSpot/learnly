@@ -85,7 +85,6 @@ response 'welcome to LearnlyApp assessment'
 ]
 ```
 
-
 ## POST Create a reservation
 
 ```

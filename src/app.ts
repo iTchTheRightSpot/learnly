@@ -30,7 +30,10 @@ export const createApp = (logger: ILogger, services: ServicesRegistry) => {
       credentialsRequired: true,
       getToken: (req) => req.cookies[env.COOKIENAME]
     }).unless({
-      path: [`${env.ROUTE_PREFIX}welcome`, new RegExp(`${env.ROUTE_PREFIX}authentication`)]
+      path: [
+        `${env.ROUTE_PREFIX}welcome`,
+        new RegExp(`${env.ROUTE_PREFIX}authentication`)
+      ]
     })
   );
   app.use(middleware.refreshToken(logger, services.jwtService));

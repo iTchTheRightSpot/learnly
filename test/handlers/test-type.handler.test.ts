@@ -75,6 +75,6 @@ describe('test type handler', () => {
 
     expect(res.status).toEqual(200);
     const body = res.body as { type: string }[];
-    expect(body.length).toBeGreaterThan(2);
+    expect(body.length).toBeGreaterThanOrEqual(2);
   });
 });

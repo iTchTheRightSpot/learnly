@@ -14,8 +14,7 @@ export const initializeHandlers = (
   logger: ILogger,
   services: ServicesRegistry
 ) => {
-  router.get('/', welcome);
-  router.post('/logout', logout);
+  router.get('/welcome', welcome);
   return {
     authHandler: new AuthHandler(router, logger, services.authService),
     profileHandler: new ProfileHandler(router, logger, services.profileService),
@@ -33,28 +32,6 @@ async function welcome(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  res.status(200).send({ message: 'welcome to Assessment' });
-  next();
-}
-
-async function logout(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-  const c = req.cookies[env.COOKIENAME];
-  if (!c) {
-    const clz = new UnauthorizedException();
-    res.status(clz.status).send({ message: clz.message, status: clz.status });
-    return;
-  }
-
-  res
-    .cookie(env.COOKIENAME, '', {
-      maxAge: 0,
-      expires: new Date(Date.now() - 24 * 60 * 60)
-    })
-    .status(204)
-    .send({});
+  res.status(200).send({ message: 'welcome to LearnlyApp assessment' });
   next();
 }

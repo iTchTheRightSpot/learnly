@@ -4,7 +4,6 @@ import { ILogger } from '@utils/log';
 import { ServicesRegistry } from '@services/services';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import * as path from 'path';
 import cookieParser from 'cookie-parser';
 import { expressjwt } from 'express-jwt';
 import { initializeHandlers } from '@handlers/handlers';
@@ -14,6 +13,12 @@ export const createApp = (logger: ILogger, services: ServicesRegistry) => {
   const app: Application = express();
 
   app.use(middleware.log(logger));
+  app.use(
+    cors({
+      origin: [env.UI_URL],
+      credentials: true
+    })
+  );
   app.use(express.json());
   app.use(bodyParser.json());
   app.use(express.urlencoded({ extended: false }));
@@ -25,17 +30,13 @@ export const createApp = (logger: ILogger, services: ServicesRegistry) => {
       credentialsRequired: true,
       getToken: (req) => req.cookies[env.COOKIENAME]
     }).unless({
-      path: [env.ROUTE_PREFIX, new RegExp(`${env.ROUTE_PREFIX}authentication`)]
+      path: [
+        `${env.ROUTE_PREFIX}welcome`,
+        new RegExp(`${env.ROUTE_PREFIX}authentication`)
+      ]
     })
   );
   app.use(middleware.refreshToken(logger, services.jwtService));
-  app.use(express.static(path.join(__dirname, 'public')));
-  app.use(
-    cors({
-      origin: [env.UI_URL],
-      credentials: true
-    })
-  );
   app.set('trust proxy', 1);
 
   // routes
